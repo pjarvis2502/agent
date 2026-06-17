@@ -1,0 +1,44 @@
+{
+  "providers": ["exa"],
+  "sources": [
+    { "name": "anthropic", "domain": "anthropic.com" },
+    { "name": "openai", "domain": "openai.com" }
+  ],
+  "queries": [
+    "PDF report paper system card whitepaper",
+    "research paper PDF",
+    "model card safety evaluation PDF",
+    "technical report PDF",
+    "economic index policy report PDF",
+    "preparedness framework PDF",
+    "safety policy document PDF",
+    "GPT system card PDF",
+    "Claude model card PDF",
+    "responsible scaling policy PDF"
+  ],
+  "exa": {
+    "passes": [
+      { "type": "neural", "category": "pdf", "num_results": 100 },
+      { "type": "keyword", "num_results": 25 }
+    ]
+  },
+  "google_cse": {
+    "max_results": 100
+  },
+  "verify_links": true,
+  "resolve_titles": true,
+  "hash_all": false,
+  "verify_timeout_seconds": 20,
+  "verify_workers": 16,
+  "title_max_bytes": 26214400,
+  "download": {
+    "enabled": false,
+    "dir": "downloads",
+    "max_bytes": 209715200,
+    "timeout_seconds": 90,
+    "max_new_per_run": 0
+  },
+  "manifest_path": "manifest.json",
+  "index_path": "RESOURCES.md",
+  "notes_path": "release_notes.md"
+}
