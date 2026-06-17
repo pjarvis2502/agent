@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Generated locally / published as release assets — never committed to git.
+manifest.json
+RESOURCES.md
+release_notes.md
+
+# Downloaded PDFs (opt-in; off by default) and partial downloads.
+downloads/
+*.part
+
+# Local state for the optional OpenAI vector-store uploader.
+openai_uploads.json

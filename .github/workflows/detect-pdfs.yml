@@ -1,0 +1,60 @@
+name: Detect new PDFs
+
+on:
+  schedule:
+    # Daily at 23:00 UTC. Adjust as needed (https://crontab.guru/).
+    - cron: "0 23 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: detect-pdfs
+  cancel-in-progress: false
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # The previous run's manifest is the sync/state file. It lives as an asset
+      # on the latest release, not in git. Pull it so we only report what's new.
+      - name: Fetch manifest from latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --pattern manifest.json --dir . \
+            || echo "No previous release with a manifest; starting fresh."
+
+      - name: Detect new PDFs
+        id: detect
+        env:
+          EXA_API_KEY: ${{ secrets.EXA_API_KEY }}
+        run: python scripts/detect_pdfs.py
+
+      # Only when something changed (new PDFs or updated content on a stable
+      # URL): cut a fresh tagged release whose notes are the changelog (just the
+      # new + updated detections) and whose assets are the full cumulative
+      # manifest.json + RESOURCES.md table.
+      - name: Publish release
+        if: ${{ steps.detect.outputs.change_count != '0' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="resources-$(date -u +%Y.%m.%d-%H%M%S)"
+          gh release create "$TAG" manifest.json RESOURCES.md \
+            --latest \
+            --title "Resources — $(date -u +%Y-%m-%d) (${{ steps.detect.outputs.new_count }} new, ${{ steps.detect.outputs.updated_count }} updated)" \
+            --notes-file release_notes.md
+          echo "Created release $TAG"
