@@ -16,3 +16,7 @@ downloads/
 
 # Local state for the optional OpenAI vector-store uploader.
 openai_uploads.json
+
+# Node / Bun (proxy/)
+node_modules/
+.wrangler/
