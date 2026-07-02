@@ -1,0 +1,23 @@
+name: proxy-ci
+
+on:
+  push:
+    branches: [main]
+    paths: ["proxy/**", ".github/workflows/proxy-ci.yml"]
+  pull_request:
+    paths: ["proxy/**", ".github/workflows/proxy-ci.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: proxy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile
+      - run: bun run typecheck
+      - run: bun test
